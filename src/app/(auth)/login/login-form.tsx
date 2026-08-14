@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { login } from "@/actions/auth";
+import { MagneticButton } from "@/components/magnetic-button";
 
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(login, undefined);
@@ -54,9 +55,13 @@ export function LoginForm() {
         </div>
       )}
 
-      <button type="submit" disabled={pending} className="neon-btn w-full">
+      <MagneticButton
+        type="submit"
+        disabled={pending}
+        className="neon-btn w-full"
+      >
         {pending ? "Ingresando..." : "Ingresar"}
-      </button>
+      </MagneticButton>
     </form>
   );
 }
