@@ -1,7 +1,7 @@
 # Control de Gastos
 
 Aplicación web para el control de gastos personales y familiares. Cuenta con un
-frontend en **Next.js**, un backend en **Express** con arquitectura por módulos y
+frontend en **Angular**, un backend en **Express** con arquitectura por módulos y
 una base de datos gestionada con **Prisma + PostgreSQL**.
 
 ## Estructura del proyecto
@@ -23,11 +23,11 @@ Control_de_gastos/
 │               ├── modules/
 │               └── roots/
 ├── prisma/           # Schema, migraciones y seed
-├── src/              # Frontend (Next.js App Router)
-│   ├── actions/      # Server actions (login, logout)
-│   ├── app/          # Páginas (login, dashboard)
-│   └── lib/          # Sesión y acceso a datos
-└── public/           # Archivos estáticos
+└── src/              # Frontend (Angular, standalone components)
+    └── app/
+        ├── core/             # Auth: servicio, interceptor, guard y modelos
+        ├── features/         # Páginas (login, dashboard)
+        └── shared/           # Componentes reutilizables (efectos del login)
 ```
 
 ## Requisitos
@@ -51,7 +51,7 @@ Control_de_gastos/
    cp backend/.env.example backend/.env   # backend
    ```
 
-   Configura `DATABASE_URL`, `JWT_SECRET` y `API_URL` con tus valores.
+   Configura `DATABASE_URL` y `JWT_SECRET` con tus valores.
 
 3. Ejecuta las migraciones y el seed:
 
@@ -69,13 +69,15 @@ cd backend
 npm run dev
 ```
 
-**Frontend** (puerto 3000):
+**Frontend** (puerto 4200):
 
 ```bash
-npm run dev
+npm start
 ```
 
-Abre [http://localhost:3000](http://localhost:3000).
+Abre [http://localhost:4200](http://localhost:4200). El dev server de Angular
+hace proxy de `/api` hacia el backend en `http://localhost:4000` (ver
+`proxy.conf.json`).
 
 ## Cuentas de prueba
 
@@ -88,10 +90,11 @@ Abre [http://localhost:3000](http://localhost:3000).
 
 | Comando | Descripción |
 | --- | --- |
-| `npm run dev` | Inicia el servidor de desarrollo |
+| `npm start` | Inicia el servidor de desarrollo (Angular) |
 | `npm run build` | Compila el proyecto para producción |
-| `npm run start` | Inicia el servidor de producción |
-| `npm run lint` | Ejecuta ESLint |
+| `npm run watch` | Compila en modo observador |
 | `npm run db:migrate` | Ejecuta las migraciones de Prisma |
 | `npm run db:seed` | Carga los datos iniciales |
 | `npm run db:studio` | Abre Prisma Studio |
+| `cd backend && npm run dev` | Inicia el backend en modo desarrollo |
+| `cd backend && npm run typecheck` | Verifica tipos del backend |
