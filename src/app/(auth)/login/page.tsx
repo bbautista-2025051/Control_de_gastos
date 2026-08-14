@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { LoginForm } from "./login-form";
+import { MouseSpotlight } from "@/components/mouse-spotlight";
 
 export default function LoginPage() {
   return (
@@ -38,13 +39,15 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="glass-strong panel overflow-hidden rounded-2xl p-6 sm:p-8">
-          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
-          <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl" />
-          <Suspense>
-            <LoginForm />
-          </Suspense>
-        </div>
+        <MouseSpotlight className="rounded-2xl">
+          <div className="glass-strong panel overflow-hidden rounded-2xl p-6 sm:p-8">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+            <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl" />
+            <Suspense>
+              <LoginForm />
+            </Suspense>
+          </div>
+        </MouseSpotlight>
 
         <div className="mt-6 glass rounded-xl border-cyan-400/20 p-4 text-xs leading-5 text-slate-300">
           <p className="flex items-center gap-2 font-semibold text-cyan-300">
