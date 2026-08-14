@@ -16,15 +16,16 @@
 # prisma
 /backend/src/generated
 
-# next.js
-/.next/
-/out/
+# angular build artifacts
+/.angular/cache
+/dist
 
 # production
 /build
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 
 # debug
@@ -37,12 +38,8 @@ yarn-error.log*
 .env*
 !.env.example
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # backend build
 /backend/dist
