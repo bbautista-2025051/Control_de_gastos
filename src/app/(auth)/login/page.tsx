@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { LoginForm } from "./login-form";
 import { MouseSpotlight } from "@/components/mouse-spotlight";
+import { FloatingParticles } from "@/components/floating-particles";
 
 export default function LoginPage() {
   return (
@@ -10,6 +11,7 @@ export default function LoginPage() {
         <div className="orb orb-1" />
         <div className="orb orb-2" />
         <div className="orb orb-3" />
+        <FloatingParticles />
       </div>
 
       <div className="w-full max-w-md">
