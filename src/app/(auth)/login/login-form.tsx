@@ -4,9 +4,30 @@ import { useActionState, useState } from "react";
 import { login } from "@/actions/auth";
 import { MagneticButton } from "@/components/magnetic-button";
 
+function passwordScore(value: string): number {
+  if (!value) return 0;
+  let score = 0;
+  if (value.length >= 8) score++;
+  if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score++;
+  if (/\d/.test(value)) score++;
+  if (/[^a-zA-Z0-9]/.test(value)) score++;
+  return score;
+}
+
+const strengthMeta: Record<number, { label: string; bar: string; text: string }> = {
+  1: { label: "Débil", bar: "bg-red-500", text: "text-red-400" },
+  2: { label: "Media", bar: "bg-yellow-500", text: "text-yellow-300" },
+  3: { label: "Fuerte", bar: "bg-lime-500", text: "text-lime-300" },
+  4: { label: "Muy fuerte", bar: "bg-emerald-400", text: "text-emerald-300" },
+};
+
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(login, undefined);
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const score = passwordScore(password);
+  const meta = score > 0 ? strengthMeta[score] : null;
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
@@ -43,6 +64,8 @@ export function LoginForm() {
             required
             placeholder="••••••••"
             className="neon-input pr-12"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
           />
           <button
             type="button"
@@ -89,6 +112,26 @@ export function LoginForm() {
             )}
           </button>
         </div>
+        {meta && (
+          <div className="mt-2">
+            <div className="flex gap-1.5">
+              {[1, 2, 3, 4].map((level) => (
+                <span
+                  key={level}
+                  className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                    level <= score ? meta.bar : "bg-slate-700/60"
+                  }`}
+                />
+              ))}
+            </div>
+            <p
+              className={`mt-1.5 text-xs font-medium ${meta.text}`}
+              aria-live="polite"
+            >
+              Fortaleza: {meta.label}
+            </p>
+          </div>
+        )}
         {state?.errors?.password && (
           <p className="mt-1.5 text-xs font-medium text-red-300">
             {state.errors.password.join(", ")}
