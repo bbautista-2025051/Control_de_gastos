@@ -120,12 +120,40 @@ body {
 
 /* ---------- Superficies ---------- */
 
+.glass-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--line);
+  background: rgba(6, 10, 20, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
 .glass {
   border: 1px solid var(--line);
   border-radius: 1.25rem;
   background: var(--surface);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-card {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.07), rgba(148, 163, 184, 0.02)),
+    var(--surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 34px rgba(2, 6, 23, 0.5);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-glow);
+  box-shadow: 0 14px 40px rgba(2, 6, 23, 0.55), 0 0 28px rgba(16, 185, 129, 0.12);
 }
 
 .glass-strong {
@@ -285,6 +313,31 @@ body {
 
 /* ---------- Iconos y chips ---------- */
 
+.icon-tile {
+  display: flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.9rem;
+  color: #fff;
+}
+
+.tile-emerald {
+  background: linear-gradient(135deg, #34d399, #059669);
+  box-shadow: 0 0 22px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.tile-cyan {
+  background: linear-gradient(135deg, #22d3ee, #0e7490);
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.tile-violet {
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  box-shadow: 0 0 22px rgba(167, 139, 250, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
 .logo-tile {
   position: relative;
   display: flex;
@@ -296,6 +349,21 @@ body {
   color: #fff;
   background: linear-gradient(135deg, #34d399, #10b981 50%, #06b6d4);
   box-shadow: 0 0 34px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.neon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.08);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #67e8f9;
 }
 
 .code-chip {
