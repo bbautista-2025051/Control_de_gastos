@@ -24,20 +24,22 @@ export function FloatingParticles({ count = 24 }: { count?: number }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const el = canvas;
+    const context = ctx;
     let raf = 0;
     let particles: Particle[] = [];
 
     function resize() {
-      const parent = canvas.parentElement;
+      const parent = el.parentElement;
       if (!parent) return;
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
+      el.width = parent.clientWidth;
+      el.height = parent.clientHeight;
 
       particles = [];
       for (let i = 0; i < count; i++) {
         particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+          x: Math.random() * el.width,
+          y: Math.random() * el.height,
           radius: 1 + Math.random() * 2,
           speed: 0.12 + Math.random() * 0.35,
           drift: 0.2 + Math.random() * 0.5,
@@ -49,22 +51,22 @@ export function FloatingParticles({ count = 24 }: { count?: number }) {
     }
 
     function tick(time: number) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, el.width, el.height);
 
       for (const p of particles) {
         p.y -= p.speed;
         if (p.y < -10) {
-          p.y = canvas.height + 10;
-          p.x = Math.random() * canvas.width;
+          p.y = el.height + 10;
+          p.x = Math.random() * el.width;
         }
 
         const sway = Math.sin(time / 900 + p.phase) * p.drift;
-        ctx.beginPath();
-        ctx.arc(p.x + sway, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = `rgba(${p.color}, 0.8)`;
-        ctx.fill();
+        context.beginPath();
+        context.arc(p.x + sway, p.y, p.radius, 0, Math.PI * 2);
+        context.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+        context.shadowBlur = 8;
+        context.shadowColor = `rgba(${p.color}, 0.8)`;
+        context.fill();
       }
 
       raf = requestAnimationFrame(tick);
