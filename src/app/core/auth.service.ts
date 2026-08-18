@@ -10,6 +10,7 @@ export const TOKEN_KEY = "auth_token";
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private logoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly userSignal = signal<AuthUser | null>(null);
   readonly user = this.userSignal.asReadonly();
@@ -25,19 +26,57 @@ export class AuthService {
         tap(({ token, user }) => {
           localStorage.setItem(TOKEN_KEY, token);
           this.userSignal.set(user);
+          this.scheduleLogout(token);
         })
       );
   }
 
   me(): Observable<MeResponse> {
     return this.http.get<MeResponse>("/api/auth/me").pipe(
-      tap(({ user }) => this.userSignal.set(user))
+      tap(({ user }) => {
+        this.userSignal.set(user);
+        const token = this.token;
+        if (token) {
+          this.scheduleLogout(token);
+        }
+      })
     );
   }
 
   logout(): void {
+    this.clearLogoutTimer();
     localStorage.removeItem(TOKEN_KEY);
     this.userSignal.set(null);
     void this.router.navigate(["/login"]);
+  }
+
+  private scheduleLogout(token: string): void {
+    this.clearLogoutTimer();
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const expiresAt = payload.exp * 1000;
+      const now = Date.now();
+      const delay = expiresAt - now;
+
+      if (delay <= 0) {
+        alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        this.logout();
+        return;
+      }
+
+      this.logoutTimer = setTimeout(() => {
+        alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        this.logout();
+      }, delay);
+    } catch {
+      this.logout();
+    }
+  }
+
+  private clearLogoutTimer(): void {
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+      this.logoutTimer = null;
+    }
   }
 }
