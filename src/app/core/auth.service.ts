@@ -3,13 +3,17 @@ import { Injectable, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { Observable, tap } from "rxjs";
 import type { AuthUser, LoginResponse, MeResponse } from "./auth.models";
+import { ToastService } from "./toast.service";
 
 export const TOKEN_KEY = "auth_token";
+
+const EXPIRED_MESSAGE = "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   private logoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly userSignal = signal<AuthUser | null>(null);
@@ -59,13 +63,13 @@ export class AuthService {
       const delay = expiresAt - now;
 
       if (delay <= 0) {
-        alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        this.toast.show(EXPIRED_MESSAGE);
         this.logout();
         return;
       }
 
       this.logoutTimer = setTimeout(() => {
-        alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        this.toast.show(EXPIRED_MESSAGE);
         this.logout();
       }, delay);
     } catch {

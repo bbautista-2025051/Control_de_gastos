@@ -1,0 +1,44 @@
+@if (toast.visible()) {
+  <div class="toast-slot" role="status" aria-live="polite">
+    <div class="glass-strong toast-card">
+      <div class="toast-icon" aria-hidden="true">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      </div>
+      <div class="toast-body">
+        <p class="toast-title">Sesión expirada</p>
+        <p class="toast-text">{{ toast.message() }}</p>
+      </div>
+      <button
+        class="toast-close"
+        type="button"
+        aria-label="Cerrar"
+        (click)="toast.hide()"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+}
