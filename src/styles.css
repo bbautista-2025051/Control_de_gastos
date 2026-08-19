@@ -366,19 +366,6 @@ body {
   color: #67e8f9;
 }
 
-.code-chip {
-  display: inline-flex;
-  border-radius: 0.4rem;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(2, 6, 23, 0.6);
-  padding: 0.1rem 0.45rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.72rem;
-  color: #67e8f9;
-}
-
-/* ---------- Puntos de estado ---------- */
-
 .status-dot {
   width: 0.5rem;
   height: 0.5rem;

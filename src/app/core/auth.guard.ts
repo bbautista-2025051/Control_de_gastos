@@ -1,6 +1,7 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router } from "@angular/router";
 import { TOKEN_KEY } from "./auth.service";
+import { ToastService } from "./toast.service";
 
 function isTokenValid(token: string): boolean {
   try {
@@ -13,11 +14,12 @@ function isTokenValid(token: string): boolean {
 
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
+  const toast = inject(ToastService);
   const token = localStorage.getItem(TOKEN_KEY);
 
   if (!token || !isTokenValid(token)) {
     localStorage.removeItem(TOKEN_KEY);
-    alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+    toast.show("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
     return router.createUrlTree(["/login"]);
   }
 

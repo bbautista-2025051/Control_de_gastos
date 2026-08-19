@@ -6,7 +6,7 @@ import { HttpError } from "../../../lib/errors";
 import type { AuthPayload } from "../../../middlewares/auth.middleware";
 import type { LoginInput } from "../auth.schemas";
 
-const TOKEN_EXPIRATION = "1m";
+const TOKEN_EXPIRATION = "20m";
 
 const publicUserSelect = {
   id: true,
