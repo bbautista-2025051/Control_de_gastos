@@ -1,0 +1,259 @@
+.dashboard-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-small {
+  height: 2.75rem;
+  width: 4.125rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 0 22px rgba(16, 185, 129, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.logo-small-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  border-radius: 0.8rem;
+}
+
+.nav-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.btn-ghost {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: rgba(148, 163, 184, 0.06);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.dashboard-main {
+  flex: 1;
+  width: 100%;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.dashboard-error {
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.1);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  color: #fca5a5;
+  font-size: 0.875rem;
+}
+
+.dash-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.dash-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.dash-title {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 0.375rem;
+}
+
+.dash-sub {
+  color: var(--muted);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.08);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #67e8f9;
+  white-space: nowrap;
+}
+
+.role-badge-admin {
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.08);
+  color: #6ee7b7;
+}
+
+.role-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #22d3ee;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+}
+
+.role-dot-admin {
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3.5rem;
+}
+
+.card {
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.card-glow {
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 999px;
+  filter: blur(46px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.glow-emerald {
+  background: rgba(16, 185, 129, 0.5);
+}
+
+.glow-cyan {
+  background: rgba(34, 211, 238, 0.5);
+}
+
+.glow-violet {
+  background: rgba(167, 139, 250, 0.5);
+}
+
+.card-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+}
+
+.card-note {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.features {
+  margin-top: 1rem;
+}
+
+.features-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.features-sub {
+  color: var(--muted);
+  max-width: 42rem;
+  margin-bottom: 2rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1.75rem;
+}
+
+.feature-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.feature-desc {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.dash-footer {
+  border-top: 1px solid var(--line);
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.dash-footer-dot {
+  margin: 0 0.4rem;
+  color: #34d399;
+}
+
+@media (max-width: 768px) {
+  .dash-head {
+    flex-direction: column;
+  }
+
+  .cards-grid,
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
