@@ -13,6 +13,7 @@ export function expensesRoutes(): Router {
   router.use(requireAuth);
 
   router.get("/", expensesController.list);
+  router.get("/summary", expensesController.summary);
   router.get("/:id", expensesController.getById);
   router.post("/", validate(createExpenseSchema), expensesController.create);
   router.patch("/:id", validate(updateExpenseSchema), expensesController.update);

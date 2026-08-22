@@ -19,6 +19,15 @@ export class ExpensesController {
     }
   };
 
+  summary = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.expensesService.summary(req.auth!);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   getById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const expense = await this.expensesService.getById(req.auth!, paramId(req));
