@@ -53,11 +53,76 @@ Control_de_gastos/
 
    Configura `DATABASE_URL` y `JWT_SECRET` con tus valores.
 
-3. Ejecuta las migraciones y el seed:
+3. Ejecuta las migraciones y el seed (ver guía detallada abajo):
 
    ```bash
    npm run db:migrate
    npm run db:seed
+   ```
+
+## Migración de la base de datos (paso a paso)
+
+1. **Instala PostgreSQL** (versión 14 o superior) y verifica que el servicio
+   esté corriendo en el puerto `5432`.
+
+2. **Crea la base de datos** `control_gastos`:
+
+   ```bash
+   psql -U postgres -c "CREATE DATABASE control_gastos;"
+   ```
+
+3. **Configura las variables de entorno** copiando los ejemplos (paso 2 de
+   *Configuración*) y coloca tu contraseña real en `DATABASE_URL`:
+
+   ```
+   postgresql://postgres:TU_PASSWORD@localhost:5432/control_gastos?schema=public
+   ```
+
+   > El CLI de Prisma lee el `.env` de la **raíz** mediante
+   > `prisma.config.ts`; el backend lee el suyo en `backend/.env`.
+
+4. **Instala las dependencias** en la raíz y en el backend:
+
+   ```bash
+   npm install
+   cd backend && npm install
+   ```
+
+5. **Aplica las migraciones**, que crean las tablas `User` y `Expense`
+   definidas en `prisma/schema.prisma` a partir de los archivos en
+   `prisma/migrations/`:
+
+   ```bash
+   npm run db:migrate
+   ```
+
+   Este comando también genera el cliente de Prisma en
+   `backend/src/generated/prisma`.
+
+6. **(Opcional) Regenera el cliente** si cambiaste el schema sin migrar:
+
+   ```bash
+   npx prisma generate
+   ```
+
+7. **Carga los datos iniciales** (usuarios de prueba y gastos de ejemplo):
+
+   ```bash
+   npm run db:seed
+   ```
+
+8. **Verifica la base de datos** con Prisma Studio (se abre en
+   `http://localhost:5555`):
+
+   ```bash
+   npm run db:studio
+   ```
+
+9. **Si algo sale mal**, reinicia por completo (borra datos, reaplica
+   migraciones y vuelve a ejecutar el seed):
+
+   ```bash
+   npx prisma migrate reset
    ```
 
 ## Ejecución
