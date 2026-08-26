@@ -12,7 +12,7 @@
     "db:studio": "prisma studio"
   },
   "private": true,
-  "packageManager": "npm@11.16.0",
+  "packageManager": "pnpm@10.14.0",
   "dependencies": {
     "@angular/common": "^22.1.0",
     "@angular/compiler": "^22.1.0",
@@ -35,11 +35,14 @@
     "tsx": "^4.23.12",
     "typescript": "~6.0.2"
   },
-  "allowScripts": {
-    "@prisma/engines@7.9.1": true,
-    "esbuild@0.28.2": true,
-    "lmdb@3.5.6": true,
-    "msgpackr-extract@3.0.4": true,
-    "prisma@7.9.1": true
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "prisma",
+      "@prisma/engines",
+      "lmdb",
+      "msgpackr-extract",
+      "@parcel/watcher"
+    ]
   }
 }

@@ -24,6 +24,21 @@ const MONTH_LABELS = [
   "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
 ] as const;
 
+// Presupuesto mensual por categoría (uso demo, sin login).
+const CATEGORY_BUDGETS: Record<string, number> = {
+  "Alimentación": 850,
+  "Transporte": 500,
+  "Vivienda": 900,
+  "Servicios": 300,
+  "Salud": 200,
+  "Ocio": 150,
+  "Educación": 300,
+  "Ropa": 150,
+  "Otros": 200,
+};
+
+const TOTAL_BUDGET = Object.values(CATEGORY_BUDGETS).reduce((a, b) => a + b, 0);
+
 export class ExpensesService {
   isAdmin(role: Role) {
     return role === "ADMIN";
@@ -87,14 +102,43 @@ export class ExpensesService {
       .map(([category, amount]) => ({ category, amount }))
       .sort((a, b) => b.amount - a.amount);
 
+    const remaining = Math.max(0, TOTAL_BUDGET - expenseMonth);
+    const budgetPercent =
+      TOTAL_BUDGET > 0
+        ? Math.max(0, Math.round((remaining / TOTAL_BUDGET) * 100))
+        : 0;
+
+    const alerts = Array.from(categorySums.entries())
+      .map(([category, spent]) => {
+        const limit = CATEGORY_BUDGETS[category];
+        if (!limit) return null;
+        return {
+          category,
+          spent,
+          limit,
+          percent: Math.round((spent / limit) * 100),
+        };
+      })
+      .filter(
+        (item): item is { category: string; spent: number; limit: number; percent: number } =>
+          item !== null && item.percent >= 80
+      )
+      .sort((a, b) => b.percent - a.percent)
+      .slice(0, 4);
+
     return {
       balance,
       incomeMonth,
       expenseMonth,
-      budget: { limit: 0, spent: expenseMonth, remaining: 0, percent: 0 },
+      budget: {
+        limit: TOTAL_BUDGET,
+        spent: expenseMonth,
+        remaining,
+        percent: budgetPercent,
+      },
       categories,
       monthly,
-      alerts: [],
+      alerts,
     };
   }
 

@@ -30,18 +30,18 @@ const CATEGORY_TONES: Record<string, string> = {
   "Salud": "red",
   "Ocio": "emerald",
   "Educación": "cyan",
-  "Ropa": "violet",
-  "Salario": "emerald",
-  "Otros": "amber",
+  "Otros": "violet",
 };
 
 const DESIGN_CATEGORIES = [
   "Alimentación",
   "Transporte",
-  "Vivienda",
+  "Educación",
   "Servicios",
+  "Vivienda",
   "Salud",
   "Ocio",
+  "Otros",
 ];
 
 interface KpiView {
@@ -94,12 +94,11 @@ export class Dashboard implements OnInit {
   readonly expenseCategories = [
     "Alimentación",
     "Transporte",
-    "Vivienda",
+    "Educación",
     "Servicios",
+    "Vivienda",
     "Salud",
     "Ocio",
-    "Educación",
-    "Ropa",
     "Otros",
   ];
 
@@ -164,14 +163,14 @@ export class Dashboard implements OnInit {
 
   readonly categories = computed<CategoryView[]>(() => {
     const raw = this.summary()?.categories ?? [];
-    const selected = raw.slice(0, 6).map((item) => ({
+    const selected = raw.slice(0, 7).map((item) => ({
       name: item.category,
       raw: item.amount,
       tone: CATEGORY_TONES[item.category] ?? "violet",
       percent: 0,
     }));
     for (const name of DESIGN_CATEGORIES) {
-      if (selected.length >= 6) {
+      if (selected.length >= 7) {
         break;
       }
       if (!selected.some((item) => item.name === name)) {
@@ -188,6 +187,13 @@ export class Dashboard implements OnInit {
   readonly alerts = computed(() => this.summary()?.alerts ?? []);
 
   readonly chart = computed<MonthSum[]>(() => this.summary()?.monthly ?? []);
+
+  readonly chartMax = computed(() =>
+    Math.max(0, ...this.chart().flatMap((m) => [m.income, m.expense]))
+  );
+
+  readonly refreshTick = signal(0);
+  readonly chartPulse = computed(() => this.refreshTick() % 2 === 1);
 
   ngOnInit(): void {
     this.auth.me().subscribe({
@@ -209,10 +215,6 @@ export class Dashboard implements OnInit {
 
   money(value: number): string {
     return money(value);
-  }
-
-  chartMax(): number {
-    return Math.max(0, ...this.chart().flatMap((m) => [m.income, m.expense]));
   }
 
   barHeight(value: number): number {
@@ -284,6 +286,12 @@ export class Dashboard implements OnInit {
           this.amount = "";
           this.submitting = false;
           this.load();
+          this.refreshTick.update((v) => v + 1);
+          setTimeout(() => {
+            document
+              .querySelector(".chart-panel")
+              ?.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 150);
         },
         error: () => {
           this.toast.show("No se pudo registrar la transacción.");

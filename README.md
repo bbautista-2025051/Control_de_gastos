@@ -33,6 +33,7 @@ Control_de_gastos/
 ## Requisitos
 
 - Node.js 20+
+- pnpm 10+
 - PostgreSQL
 
 ## Configuración
@@ -40,8 +41,8 @@ Control_de_gastos/
 1. Clona el repositorio e instala las dependencias:
 
    ```bash
-   npm install
-   cd backend && npm install
+   pnpm install
+   cd backend && pnpm install
    ```
 
 2. Crea los archivos de entorno a partir de los ejemplos:
@@ -56,8 +57,8 @@ Control_de_gastos/
 3. Ejecuta las migraciones y el seed (ver guía detallada abajo):
 
    ```bash
-   npm run db:migrate
-   npm run db:seed
+   pnpm db:migrate
+   pnpm db:seed
    ```
 
 ## Migración de la base de datos (paso a paso)
@@ -84,8 +85,8 @@ Control_de_gastos/
 4. **Instala las dependencias** en la raíz y en el backend:
 
    ```bash
-   npm install
-   cd backend && npm install
+   pnpm install
+   cd backend && pnpm install
    ```
 
 5. **Aplica las migraciones**, que crean las tablas `User` y `Expense`
@@ -93,7 +94,7 @@ Control_de_gastos/
    `prisma/migrations/`:
 
    ```bash
-   npm run db:migrate
+   pnpm db:migrate
    ```
 
    Este comando también genera el cliente de Prisma en
@@ -102,27 +103,27 @@ Control_de_gastos/
 6. **(Opcional) Regenera el cliente** si cambiaste el schema sin migrar:
 
    ```bash
-   npx prisma generate
+   pnpm prisma generate
    ```
 
 7. **Carga los datos iniciales** (usuarios de prueba y gastos de ejemplo):
 
    ```bash
-   npm run db:seed
+   pnpm db:seed
    ```
 
 8. **Verifica la base de datos** con Prisma Studio (se abre en
    `http://localhost:5555`):
 
    ```bash
-   npm run db:studio
+   pnpm db:studio
    ```
 
 9. **Si algo sale mal**, reinicia por completo (borra datos, reaplica
    migraciones y vuelve a ejecutar el seed):
 
    ```bash
-   npx prisma migrate reset
+   pnpm prisma migrate reset
    ```
 
 ## Ejecución
@@ -131,13 +132,13 @@ Control_de_gastos/
 
 ```bash
 cd backend
-npm run dev
+pnpm dev
 ```
 
 **Frontend** (puerto 4200):
 
 ```bash
-npm start
+pnpm start
 ```
 
 Abre [http://localhost:4200](http://localhost:4200). El dev server de Angular
@@ -155,11 +156,11 @@ hace proxy de `/api` hacia el backend en `http://localhost:4000` (ver
 
 | Comando | Descripción |
 | --- | --- |
-| `npm start` | Inicia el servidor de desarrollo (Angular) |
-| `npm run build` | Compila el proyecto para producción |
-| `npm run watch` | Compila en modo observador |
-| `npm run db:migrate` | Ejecuta las migraciones de Prisma |
-| `npm run db:seed` | Carga los datos iniciales |
-| `npm run db:studio` | Abre Prisma Studio |
-| `cd backend && npm run dev` | Inicia el backend en modo desarrollo |
-| `cd backend && npm run typecheck` | Verifica tipos del backend |
+| `pnpm start` | Inicia el servidor de desarrollo (Angular) |
+| `pnpm build` | Compila el proyecto para producción |
+| `pnpm watch` | Compila en modo observador |
+| `pnpm db:migrate` | Ejecuta las migraciones de Prisma |
+| `pnpm db:seed` | Carga los datos iniciales |
+| `pnpm db:studio` | Abre Prisma Studio |
+| `cd backend && pnpm dev` | Inicia el backend en modo desarrollo |
+| `cd backend && pnpm typecheck` | Verifica tipos del backend |

@@ -76,7 +76,7 @@
         </p>
       </section>
 
-      <section class="kpi-grid">
+      <section class="kpi-grid" [class.chart-refresh]="chartPulse()">
         @for (kpi of kpis(); track kpi.label) {
           <article class="kpi-card">
             <div class="kpi-top">
@@ -195,96 +195,120 @@
       </section>
 
       <section class="cols-2">
-        <article class="panel-card">
-          <header class="panel-head">
-            <h2 class="panel-title">Gasto por categoría</h2>
-            <p class="panel-sub">Categorías predefinidas del sistema</p>
-          </header>
-          <div class="cat-grid">
-            @for (cat of categories(); track cat.name) {
-              <div class="cat-item">
-                <div class="cat-row">
-                  <span class="cat-name">{{ cat.name }}</span>
-                  <span class="cat-amount">{{ money(cat.raw) }}</span>
-                </div>
-                <div class="bar">
-                  <span
-                    class="bar-fill"
-                    [class]="'bar-' + cat.tone"
-                    [style.width.%]="cat.percent"
-                  ></span>
-                </div>
-              </div>
-            }
-          </div>
-        </article>
-
-        <div class="right-col">
+        <div class="left-col">
           <article class="panel-card">
             <header class="panel-head">
-              <h2 class="panel-title">Alertas de presupuesto</h2>
-              <p class="panel-sub">Límite mensual por categoría</p>
+              <h2 class="panel-title">Gasto por categoría</h2>
+              <p class="panel-sub">Categorías predefinidas del sistema</p>
             </header>
-            @if (alerts().length > 0) {
-              <div class="alert-grid">
-                @for (alert of alerts(); track alert.category) {
-                  <div class="alert-card" [class]="alert.percent >= 100 ? 'alert-red' : 'alert-amber'">
-                    <p class="alert-line">
-                      <span class="alert-dot"></span>
-                      {{ alert.category }} — <b>{{ alert.percent }}% del límite</b>
-                    </p>
-                    <p class="alert-detail">
-                      {{ money(alert.spent) }} de {{ money(alert.limit) }} presupuestados
-                    </p>
+            <div class="cat-grid" [class.chart-refresh]="chartPulse()">
+              @for (cat of categories().slice(0, 6); track cat.name) {
+                <div class="cat-item">
+                  <div class="cat-row">
+                    <span class="cat-name">{{ cat.name }}</span>
+                    <span class="cat-amount">{{ money(cat.raw) }}</span>
                   </div>
-                }
-              </div>
-            } @else {
-              <p class="alert-empty">
-                No hay alertas de presupuesto todavía. Registra transacciones para
-                ver tu avance por categoría.
-              </p>
-            }
+                  <div class="bar">
+                    <span
+                      class="bar-fill"
+                      [class]="'bar-' + cat.tone"
+                      [style.width.%]="cat.percent"
+                    ></span>
+                  </div>
+                </div>
+              }
+            </div>
           </article>
 
-          <article class="panel-card chart-panel">
+          <article class="panel-card">
             <header class="panel-head">
               <h2 class="panel-title">Comparativa mensual</h2>
               <p class="panel-sub">Ingresos vs. egresos — últimos 6 meses</p>
             </header>
-            <div class="chart">
-              <div class="chart-plot">
-                @for (month of chart(); track month.label) {
-                  <div class="chart-group">
-                    <div class="chart-bars">
-                      <span
-                        class="chart-bar chart-income"
-                        [style.height.%]="barHeight(month.income)"
-                        title="Ingresos {{ month.label }}"
-                      ></span>
-                      <span
-                        class="chart-bar chart-expense"
-                        [style.height.%]="barHeight(month.expense)"
-                        title="Egresos {{ month.label }}"
-                      ></span>
-                    </div>
-                    <span class="chart-label">{{ month.label }}</span>
+            <div class="cat-grid" [class.chart-refresh]="chartPulse()">
+              @for (cat of categories().slice(5, 7); track cat.name) {
+                <div class="cat-item">
+                  <div class="cat-row">
+                    <span class="cat-name">{{ cat.name }}</span>
+                    <span class="cat-amount">{{ money(cat.raw) }}</span>
                   </div>
-                }
-              </div>
-              <div class="chart-legend">
-                <span class="legend-item">
-                  <span class="legend-dot legend-dot-income"></span>
-                  Ingresos
-                </span>
-                <span class="legend-item">
-                  <span class="legend-dot legend-dot-expense"></span>
-                  Egresos
-                </span>
-              </div>
+                  <div class="bar">
+                    <span
+                      class="bar-fill"
+                      [class]="'bar-' + cat.tone"
+                      [style.width.%]="cat.percent"
+                    ></span>
+                  </div>
+                </div>
+              }
             </div>
           </article>
         </div>
+
+        <article class="panel-card combined-alerts-chart">
+          <header class="panel-head">
+            <h2 class="panel-title">Alertas de presupuesto</h2>
+            <p class="panel-sub">Límite mensual por categorías</p>
+          </header>
+          @if (alerts().length > 0) {
+            <div class="alert-grid" [class.alert-compact]="alerts().length > 2">
+              @for (alert of alerts(); track alert.category) {
+                <div class="alert-card" [class]="alert.percent >= 100 ? 'alert-red' : 'alert-amber'">
+                  <p class="alert-line">
+                    <span class="alert-dot"></span>
+                    {{ alert.category }} — <b>{{ alert.percent }}% del límite</b>
+                  </p>
+                  <p class="alert-detail">
+                    {{ money(alert.spent) }} de {{ money(alert.limit) }} presupuestados
+                  </p>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="alert-empty">
+              No hay alertas de presupuesto todavía. Registra transacciones para
+              ver tu avance por categoría.
+            </p>
+          }
+
+          <div class="combined-section-gap"></div>
+
+          <header class="panel-head">
+            <h2 class="panel-title">Comparativa mensual</h2>
+            <p class="panel-sub">Ingresos vs. egresos — últimos 6 meses</p>
+          </header>
+          <div class="chart">
+            <div class="chart-plot" [class.chart-refresh]="chartPulse()">
+              @for (month of chart(); track month.label) {
+                <div class="chart-group">
+                  <div class="chart-bars">
+                    <span
+                      class="chart-bar chart-income"
+                      [style.height.%]="barHeight(month.income)"
+                      title="Ingresos {{ month.label }}"
+                    ></span>
+                    <span
+                      class="chart-bar chart-expense"
+                      [style.height.%]="barHeight(month.expense)"
+                      title="Egresos {{ month.label }}"
+                    ></span>
+                  </div>
+                  <span class="chart-label">{{ month.label }}</span>
+                </div>
+              }
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item">
+                <span class="legend-dot legend-dot-income"></span>
+                Ingresos
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot legend-dot-expense"></span>
+                Egresos
+              </span>
+            </div>
+          </div>
+        </article>
       </section>
 
       <section class="panel-card tx-panel">
