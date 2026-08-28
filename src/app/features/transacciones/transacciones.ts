@@ -1,26 +1,24 @@
-import { Component, OnInit, computed, inject, signal } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
+import { RouterLink, RouterLinkActive } from "@angular/router";
 import { AuthService } from "../../core/auth.service";
 import { ToastService } from "../../core/toast.service";
 import {
   ExpensesService,
   type DashboardSummary,
-  type MonthSum,
+  type ExpenseItem,
 } from "../../core/expenses.service";
 
 const money = (value: number): string =>
   new Intl.NumberFormat("es-GT", {
     style: "currency",
     currency: "GTQ",
-  }).format(value);
-
-const moneyNoDecimals = (value: number): string =>
-  new Intl.NumberFormat("es-GT", {
-    style: "currency",
-    currency: "GTQ",
-    maximumFractionDigits: 0,
   }).format(value);
 
 const CATEGORY_TONES: Record<string, string> = {
@@ -31,22 +29,26 @@ const CATEGORY_TONES: Record<string, string> = {
   "Salud": "red",
   "Ocio": "emerald",
   "Educación": "cyan",
+  "Ropa": "violet",
+  "Salario": "emerald",
   "Otros": "violet",
 };
 
-const DESIGN_CATEGORIES = [
-  "Alimentación",
-  "Transporte",
-  "Educación",
-  "Servicios",
-  "Vivienda",
-  "Salud",
-  "Ocio",
-  "Otros",
-];
+const CATEGORY_ICONS: Record<string, string> = {
+  "Salario": "wallet",
+  "Alimentación": "cart",
+  "Servicios": "bulb",
+  "Transporte": "bus",
+  "Salud": "health",
+  "Vivienda": "home",
+  "Educación": "book",
+  "Ocio": "gamepad",
+  "Ropa": "shirt",
+  "Otros": "box",
+};
 
 interface KpiView {
-  icon: "wallet" | "trend-up" | "trend-down" | "percent";
+  icon: "wallet" | "trend-up" | "trend-down" | "list";
   tone: "emerald" | "cyan" | "red" | "violet";
   label: string;
   value: string;
@@ -69,47 +71,61 @@ interface CategoryView {
   percent: number;
 }
 
+type Filter = "ALL" | "INCOME" | "EXPENSE";
+
 @Component({
-  selector: "app-dashboard",
-  imports: [FormsModule, RouterLink],
-  templateUrl: "./dashboard.html",
-  styleUrl: "./dashboard.css",
+  selector: "app-transacciones",
+  standalone: true,
+  imports: [FormsModule, RouterLink, RouterLinkActive],
+  templateUrl: "./transacciones.html",
+  styleUrl: "./transacciones.css",
 })
-export class Dashboard implements OnInit {
-  private readonly http = inject(HttpClient);
+export class Transacciones implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly expenses = inject(ExpensesService);
   readonly auth = inject(AuthService);
 
   readonly user = this.auth.user;
   readonly summary = signal<DashboardSummary | null>(null);
+  readonly transactions = signal<ExpenseItem[]>([]);
   loadError = false;
 
-  readonly tipo = signal<"INCOME" | "EXPENSE">("INCOME");
   readonly menuOpen = signal(false);
+  readonly filter = signal<Filter>("ALL");
+  search = "";
+  loading = false;
+
+  readonly tipo = signal<"INCOME" | "EXPENSE">("EXPENSE");
   amount = "";
   category = "Alimentación";
+  description = "";
   date = new Date().toISOString().slice(0, 10);
   submitting = false;
 
   readonly expenseCategories = [
     "Alimentación",
     "Transporte",
-    "Educación",
-    "Servicios",
     "Vivienda",
+    "Servicios",
     "Salud",
     "Ocio",
+    "Educación",
+    "Ropa",
+    "Salario",
     "Otros",
   ];
 
   readonly kpis = computed<KpiView[]>(() => {
     const data = this.summary();
+    const count = this.transactions().length;
     const months = data?.monthly ?? [];
     const current = months[months.length - 1];
     const previous = months[months.length - 2];
-    const budget = data?.budget;
 
+    const balanceTrend = this.buildTrend(
+      (current?.income ?? 0) - (current?.expense ?? 0),
+      (previous?.income ?? 0) - (previous?.expense ?? 0)
+    );
     const incomeTrend = this.buildTrend(
       current?.income ?? 0,
       previous?.income ?? 0
@@ -119,16 +135,12 @@ export class Dashboard implements OnInit {
       previous?.expense ?? 0,
       true
     );
-    const balanceTrend = this.buildTrend(
-      (current?.income ?? 0) - (current?.expense ?? 0),
-      (previous?.income ?? 0) - (previous?.expense ?? 0)
-    );
 
     return [
       {
         icon: "wallet",
         tone: "emerald",
-        label: "Balance total",
+        label: "Balance actual",
         value: money(data?.balance ?? 0),
         ...balanceTrend,
         text: "vs mes anterior",
@@ -150,51 +162,55 @@ export class Dashboard implements OnInit {
         text: "vs mes anterior",
       },
       {
-        icon: "percent",
+        icon: "list",
         tone: "violet",
-        label: "Presupuesto restante",
-        value: `${budget?.percent ?? 0}%`,
-        arrow: (budget?.remaining ?? 0) > 0 ? "up" : null,
-        arrowClass: (budget?.remaining ?? 0) > 0 ? "trend-up" : "trend-info",
+        label: "Transacciones",
+        value: `${count}`,
+        arrow: null,
+        arrowClass: "trend-info",
         percent: null,
-        text: `${moneyNoDecimals(budget?.remaining ?? 0)} disponibles`,
+        text: "Registradas este mes",
       },
     ];
   });
 
   readonly categories = computed<CategoryView[]>(() => {
     const raw = this.summary()?.categories ?? [];
-    const selected = raw.slice(0, 7).map((item) => ({
+    const selected = raw.slice(0, 5).map((item) => ({
       name: item.category,
       raw: item.amount,
       tone: CATEGORY_TONES[item.category] ?? "violet",
       percent: 0,
     }));
-    for (const name of DESIGN_CATEGORIES) {
-      if (selected.length >= 7) {
+    for (const name of this.expenseCategories) {
+      if (selected.length >= 5) {
         break;
       }
       if (!selected.some((item) => item.name === name)) {
         selected.push({ name, raw: 0, tone: CATEGORY_TONES[name] ?? "violet", percent: 0 });
       }
     }
-    const max = Math.max(0, ...selected.map((item) => item.raw));
+    const total = Math.max(1, selected.reduce((sum, item) => sum + item.raw, 0));
     for (const item of selected) {
-      item.percent = max > 0 ? Math.round((item.raw / max) * 100) : 0;
+      item.percent = Math.round((item.raw / total) * 100);
     }
     return selected;
   });
 
-  readonly alerts = computed(() => this.summary()?.alerts ?? []);
+  readonly filteredTransactions = computed<ExpenseItem[]>(() => {
+    const query = this.search.trim().toLowerCase();
+    return this.transactions().filter((item) => {
+      if (query && !item.description.toLowerCase().includes(query)) {
+        return false;
+      }
+      return true;
+    });
+  });
 
-  readonly chart = computed<MonthSum[]>(() => this.summary()?.monthly ?? []);
-
-  readonly chartMax = computed(() =>
-    Math.max(0, ...this.chart().flatMap((m) => [m.income, m.expense]))
-  );
-
-  readonly refreshTick = signal(0);
-  readonly chartPulse = computed(() => this.refreshTick() % 2 === 1);
+  readonly totalMonth = computed(() => {
+    const data = this.summary();
+    return (data?.incomeMonth ?? 0) + (data?.expenseMonth ?? 0);
+  });
 
   ngOnInit(): void {
     this.auth.me().subscribe({
@@ -206,21 +222,41 @@ export class Dashboard implements OnInit {
   }
 
   load(): void {
+    this.loading = true;
+    const current = this.filter();
+    const type =
+      current === "ALL"
+        ? undefined
+        : (current as "INCOME" | "EXPENSE");
+    this.expenses
+      .list({ page: 1, limit: 50, type })
+      .subscribe({
+        next: (data) => {
+          this.transactions.set(data.items);
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+          this.loadError = true;
+        },
+      });
     this.expenses.summary().subscribe({
       next: (data) => this.summary.set(data),
-      error: () => {
-        this.loadError = true;
-      },
+      error: () => {},
     });
+  }
+
+  setFilter(value: Filter): void {
+    this.filter.set(value);
+    this.load();
   }
 
   money(value: number): string {
     return money(value);
   }
 
-  barHeight(value: number): number {
-    const max = this.chartMax();
-    return max > 0 ? (value / max) * 100 : 0;
+  categoryIcon(category: string): string {
+    return CATEGORY_ICONS[category] ?? "box";
   }
 
   private buildTrend(current: number, previous: number, invert = false): Trend {
@@ -238,6 +274,14 @@ export class Dashboard implements OnInit {
       arrowClass: good ? "trend-up" : "trend-down",
       percent,
     };
+  }
+
+  formatDate(value: string): string {
+    const date = new Date(value);
+    return date.toLocaleDateString("es-GT", {
+      day: "2-digit",
+      month: "short",
+    });
   }
 
   initials(name: string | undefined): string {
@@ -273,26 +317,22 @@ export class Dashboard implements OnInit {
       return;
     }
     this.submitting = true;
-    this.http
-      .post("/api/expenses", {
-        description: this.category,
+    this.expenses
+      .create({
+        description: this.description.trim() || this.category,
         amount,
         type: this.tipo(),
         category: this.category,
-        date: this.date ? new Date(this.date) : undefined,
+        date: this.date ? new Date(this.date).toISOString() : undefined,
       })
       .subscribe({
         next: () => {
           this.toast.show("Transacción registrada correctamente.");
           this.amount = "";
+          this.description = "";
           this.submitting = false;
+          this.filter.set("ALL");
           this.load();
-          this.refreshTick.update((v) => v + 1);
-          setTimeout(() => {
-            document
-              .querySelector(".chart-panel")
-              ?.scrollIntoView({ behavior: "smooth", block: "center" });
-          }, 150);
         },
         error: () => {
           this.toast.show("No se pudo registrar la transacción.");

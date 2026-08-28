@@ -14,5 +14,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import("./features/dashboard/dashboard").then((m) => m.Dashboard),
   },
+  {
+    path: "transacciones",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./features/transacciones/transacciones").then(
+        (m) => m.Transacciones
+      ),
+  },
   { path: "**", redirectTo: "dashboard" },
 ];

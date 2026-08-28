@@ -36,11 +36,65 @@ export interface DashboardSummary {
   alerts: BudgetAlert[];
 }
 
+export interface ExpenseItem {
+  id: string;
+  description: string;
+  amount: number;
+  type: "INCOME" | "EXPENSE";
+  category: string;
+  date: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExpenseListResponse {
+  items: ExpenseItem[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
+export interface ListExpensesParams {
+  page?: number;
+  limit?: number;
+  type?: "INCOME" | "EXPENSE";
+  category?: string;
+}
+
 @Injectable({ providedIn: "root" })
 export class ExpensesService {
   private readonly http = inject(HttpClient);
 
   summary() {
     return this.http.get<DashboardSummary>("/api/expenses/summary");
+  }
+
+  list(params: ListExpensesParams = {}) {
+    const query: Record<string, string | number> = {};
+    if (params.page !== undefined) {
+      query["page"] = params.page;
+    }
+    if (params.limit !== undefined) {
+      query["limit"] = params.limit;
+    }
+    if (params.type !== undefined) {
+      query["type"] = params.type;
+    }
+    if (params.category !== undefined) {
+      query["category"] = params.category;
+    }
+    return this.http.get<ExpenseListResponse>("/api/expenses", { params: query });
+  }
+
+  create(input: {
+    description: string;
+    amount: number;
+    type: "INCOME" | "EXPENSE";
+    category: string;
+    date?: string;
+  }) {
+    return this.http.post<{ expense: ExpenseItem }>("/api/expenses", input);
   }
 }
