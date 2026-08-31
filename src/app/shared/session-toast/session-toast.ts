@@ -1,4 +1,5 @@
 import { Component, inject } from "@angular/core";
+import { InactivityService } from "../../core/inactivity.service";
 import { ToastService } from "../../core/toast.service";
 
 @Component({
@@ -8,4 +9,9 @@ import { ToastService } from "../../core/toast.service";
 })
 export class SessionToast {
   readonly toast = inject(ToastService);
+  readonly inactivity = inject(InactivityService);
+
+  extendSession(): void {
+    this.inactivity.extendSession();
+  }
 }

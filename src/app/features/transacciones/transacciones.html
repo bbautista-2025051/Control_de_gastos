@@ -67,12 +67,12 @@
 
   <main class="tx-main">
     @if (loadError) {
-      <p class="tx-error">No se pudo cargar tu información.</p>
+      <p class="tx-error">No se pudo cargar su información.</p>
     } @else {
       <section class="page-head">
         <h1 class="page-title">Transacciones</h1>
         <p class="page-sub">
-          Registra y consulta tus ingresos y gastos — sin necesidad de iniciar sesión
+          Registra y consulta sus ingresos y gastos — sin necesidad de iniciar sesión
         </p>
       </section>
 
@@ -257,7 +257,7 @@
               <p class="list-empty">Cargando movimientos…</p>
             } @else if (filteredTransactions().length === 0) {
               <p class="list-empty">
-                No hay movimientos registrados que coincidan con tu búsqueda.
+                No hay movimientos registrados que coincidan con su búsqueda.
               </p>
             } @else {
               <ul class="tx-list">
