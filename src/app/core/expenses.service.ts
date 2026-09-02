@@ -97,4 +97,24 @@ export class ExpensesService {
   }) {
     return this.http.post<{ expense: ExpenseItem }>("/api/expenses", input);
   }
+
+  update(
+    id: string,
+    input: {
+      description?: string;
+      amount?: number;
+      type?: "INCOME" | "EXPENSE";
+      category?: string;
+      date?: string;
+    }
+  ) {
+    return this.http.patch<{ expense: ExpenseItem }>(
+      `/api/expenses/${id}`,
+      input
+    );
+  }
+
+  remove(id: string) {
+    return this.http.delete<{ message: string }>(`/api/expenses/${id}`);
+  }
 }

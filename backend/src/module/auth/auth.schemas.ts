@@ -5,8 +5,8 @@ export const loginSchema = z.object({
     .email({ error: "Ingresa un correo electrónico válido." })
     .trim(),
   password: z
-    .string({ error: "Ingresa tu contraseña." })
-    .min(1, { error: "Ingresa tu contraseña." }),
+    .string({ error: "Ingresa su contraseña." })
+    .min(1, { error: "Ingresa su contraseña." }),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

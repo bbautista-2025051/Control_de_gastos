@@ -14,6 +14,11 @@ import {
   type DashboardSummary,
   type ExpenseItem,
 } from "../../core/expenses.service";
+import {
+  formatDisplayDate,
+  localDateToIso,
+  todayLocalDate,
+} from "../../core/date.utils";
 
 const money = (value: number): string =>
   new Intl.NumberFormat("es-GT", {
@@ -99,8 +104,19 @@ export class Transacciones implements OnInit {
   amount = "";
   category = "Alimentación";
   description = "";
-  date = new Date().toISOString().slice(0, 10);
+  date = todayLocalDate();
   submitting = false;
+
+  readonly editing = signal<ExpenseItem | null>(null);
+  editTipo: "INCOME" | "EXPENSE" = "EXPENSE";
+  editAmount = "";
+  editCategory = "Alimentación";
+  editDescription = "";
+  editDate = "";
+  savingEdit = false;
+
+  readonly deleting = signal<ExpenseItem | null>(null);
+  deletingTransaction = false;
 
   readonly expenseCategories = [
     "Alimentación",
@@ -277,11 +293,7 @@ export class Transacciones implements OnInit {
   }
 
   formatDate(value: string): string {
-    const date = new Date(value);
-    return date.toLocaleDateString("es-GT", {
-      day: "2-digit",
-      month: "short",
-    });
+    return formatDisplayDate(value);
   }
 
   initials(name: string | undefined): string {
@@ -300,7 +312,7 @@ export class Transacciones implements OnInit {
 
   settings(): void {
     this.menuOpen.set(false);
-    this.toast.show("Los ajustes de la cuenta estarán disponibles próximamente.");
+    this.toast.info("Los ajustes de la cuenta estarán disponibles próximamente.", "Próximamente");
   }
 
   setTipo(value: "INCOME" | "EXPENSE"): void {
@@ -310,7 +322,7 @@ export class Transacciones implements OnInit {
   submit(): void {
     const amount = Number(this.amount);
     if (!amount || amount <= 0) {
-      this.toast.show("Ingresa un monto válido.");
+      this.toast.error("Ingrese un monto válido para la transacción.", "Monto inválido");
       return;
     }
     if (this.submitting) {
@@ -323,11 +335,12 @@ export class Transacciones implements OnInit {
         amount,
         type: this.tipo(),
         category: this.category,
-        date: this.date ? new Date(this.date).toISOString() : undefined,
+        date: localDateToIso(this.date),
       })
       .subscribe({
         next: () => {
-          this.toast.show("Transacción registrada correctamente.");
+          const tipo = this.tipo() === "INCOME" ? "Ingreso" : "Egreso";
+          this.toast.success(`${tipo} registrado correctamente.`, `${tipo} registrado`);
           this.amount = "";
           this.description = "";
           this.submitting = false;
@@ -335,7 +348,7 @@ export class Transacciones implements OnInit {
           this.load();
         },
         error: () => {
-          this.toast.show("No se pudo registrar la transacción.");
+          this.toast.error("No se pudo registrar la transacción. Intente de nuevo.", "Error al registrar");
           this.submitting = false;
         },
       });
@@ -343,5 +356,85 @@ export class Transacciones implements OnInit {
 
   logout(): void {
     this.auth.logout();
+  }
+
+  openEdit(item: ExpenseItem): void {
+    this.editTipo = item.type;
+    this.editAmount = String(item.amount);
+    this.editCategory = item.category;
+    this.editDescription = item.description;
+    this.editDate = item.date.slice(0, 10);
+    this.editing.set(item);
+  }
+
+  closeEdit(): void {
+    this.editing.set(null);
+  }
+
+  saveEdit(): void {
+    const item = this.editing();
+    if (!item) {
+      return;
+    }
+    const amount = Number(this.editAmount);
+    if (!amount || amount <= 0) {
+      this.toast.error("Ingrese un monto válido para la transacción.", "Monto inválido");
+      return;
+    }
+    if (this.savingEdit) {
+      return;
+    }
+    this.savingEdit = true;
+    this.expenses
+      .update(item.id, {
+        description: this.editDescription.trim() || this.editCategory,
+        amount,
+        type: this.editTipo,
+        category: this.editCategory,
+        date: localDateToIso(this.editDate),
+      })
+      .subscribe({
+        next: () => {
+          this.toast.success("La transacción se actualizó correctamente.", "Transacción actualizada");
+          this.savingEdit = false;
+          this.editing.set(null);
+          this.load();
+        },
+        error: () => {
+          this.toast.error("No se pudo actualizar la transacción. Intente de nuevo.", "Error al actualizar");
+          this.savingEdit = false;
+        },
+      });
+  }
+
+  confirmDelete(item: ExpenseItem): void {
+    this.deleting.set(item);
+  }
+
+  cancelDelete(): void {
+    this.deleting.set(null);
+  }
+
+  deleteTransaction(): void {
+    const item = this.deleting();
+    if (!item) {
+      return;
+    }
+    if (this.deletingTransaction) {
+      return;
+    }
+    this.deletingTransaction = true;
+    this.expenses.remove(item.id).subscribe({
+      next: () => {
+        this.toast.success("La transacción se eliminó permanentemente.", "Transacción eliminada");
+        this.deletingTransaction = false;
+        this.deleting.set(null);
+        this.load();
+      },
+      error: () => {
+        this.toast.error("No se pudo eliminar la transacción. Intente de nuevo.", "Error al eliminar");
+        this.deletingTransaction = false;
+      },
+    });
   }
 }

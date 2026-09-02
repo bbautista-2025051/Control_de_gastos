@@ -81,7 +81,7 @@ export class Login {
         this.pending = false;
         this.errorMessage =
           err.status === 0
-            ? "No se pudo conectar con el servidor. Intenta de nuevo."
+            ? "No se pudo conectar con el servidor. Intente de nuevo."
             : (err.error?.error as string | undefined) ??
               "Credenciales incorrectas.";
       },

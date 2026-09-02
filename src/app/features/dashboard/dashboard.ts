@@ -9,6 +9,7 @@ import {
   type DashboardSummary,
   type MonthSum,
 } from "../../core/expenses.service";
+import { localDateToIso, todayLocalDate } from "../../core/date.utils";
 
 const money = (value: number): string =>
   new Intl.NumberFormat("es-GT", {
@@ -89,7 +90,7 @@ export class Dashboard implements OnInit {
   readonly menuOpen = signal(false);
   amount = "";
   category = "Alimentación";
-  date = new Date().toISOString().slice(0, 10);
+  date = todayLocalDate();
   submitting = false;
 
   readonly expenseCategories = [
@@ -256,7 +257,7 @@ export class Dashboard implements OnInit {
 
   settings(): void {
     this.menuOpen.set(false);
-    this.toast.show("Los ajustes de la cuenta estarán disponibles próximamente.");
+    this.toast.info("Los ajustes de la cuenta estarán disponibles próximamente.", "Próximamente");
   }
 
   setTipo(value: "INCOME" | "EXPENSE"): void {
@@ -266,7 +267,7 @@ export class Dashboard implements OnInit {
   submit(): void {
     const amount = Number(this.amount);
     if (!amount || amount <= 0) {
-      this.toast.show("Ingresa un monto válido.");
+      this.toast.error("Ingrese un monto válido para la transacción.", "Monto inválido");
       return;
     }
     if (this.submitting) {
@@ -279,11 +280,12 @@ export class Dashboard implements OnInit {
         amount,
         type: this.tipo(),
         category: this.category,
-        date: this.date ? new Date(this.date) : undefined,
+        date: localDateToIso(this.date),
       })
       .subscribe({
         next: () => {
-          this.toast.show("Transacción registrada correctamente.");
+          const tipo = this.tipo() === "INCOME" ? "Ingreso" : "Egreso";
+          this.toast.success(`${tipo} registrado correctamente.`, `${tipo} registrado`);
           this.amount = "";
           this.submitting = false;
           this.load();
@@ -295,7 +297,7 @@ export class Dashboard implements OnInit {
           }, 150);
         },
         error: () => {
-          this.toast.show("No se pudo registrar la transacción.");
+          this.toast.error("No se pudo registrar la transacción. Intente de nuevo.", "Error al registrar");
           this.submitting = false;
         },
       });
