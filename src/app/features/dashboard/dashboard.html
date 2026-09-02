@@ -1,0 +1,389 @@
+<div class="dash-shell">
+  <div class="bg-light bg-light-green" aria-hidden="true"></div>
+  <div class="bg-light bg-light-purple" aria-hidden="true"></div>
+
+  <header class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="brand">
+        <img
+          src="logo-gestion.png"
+          alt="Logo de Control de Gastos"
+          class="brand-logo"
+        />
+      </div>
+
+      <nav class="nav-tabs" aria-label="Navegación principal">
+        <a class="nav-tab nav-tab-active" aria-current="page">Dashboard</a>
+        <a class="nav-tab">Transacciones</a>
+        <a class="nav-tab">Categorías</a>
+        <a class="nav-tab">Reportes</a>
+      </nav>
+
+      <div class="avatar-wrap">
+        <button class="avatar" type="button" (click)="toggleMenu()" title="Menú de usuario">
+          {{ initials(user()?.name) }}
+        </button>
+        @if (menuOpen()) {
+          <div class="menu-backdrop" (click)="menuOpen.set(false)"></div>
+          <div class="user-menu">
+            <button class="user-menu-item" type="button" (click)="settings()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a6.759 6.759 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              Ajustes de la cuenta
+            </button>
+            <button class="user-menu-item user-menu-item-danger" type="button" (click)="logout()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-9a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 4.5 21h9a2.25 2.25 0 0 0 2.25-2.25V15m0 0 3-3m0 0-3-3m3 3H9" />
+              </svg>
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    @if (loadError) {
+      <p class="dash-error">No se pudo cargar tu información de usuario.</p>
+    } @else {
+      <section class="page-head">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub">
+          Resumen de tus finanzas personales y familiares - sin necesidad de iniciar sesión
+        </p>
+      </section>
+
+      <section class="kpi-grid">
+        @for (kpi of kpis(); track kpi.label) {
+          <article class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-icon" [class]="'kpi-icon-' + kpi.tone">
+                @switch (kpi.icon) {
+                  @case ("wallet") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M21 12a2 2 0 0 0-2-2H7a2 2 0 0 1 0-4h12v4" />
+                      <path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1" />
+                      <circle cx="17" cy="15" r="1" fill="currentColor" />
+                    </svg>
+                  }
+                  @case ("trend-up") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+                    </svg>
+                  }
+                  @case ("trend-down") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M2.25 6 9 12.75l4.286-4.286a11.948 11.948 0 0 1 4.306 6.43l.776 2.898m0 0 3.182-5.511m-3.182 5.51-5.511-3.181" />
+                    </svg>
+                  }
+                  @case ("percent") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 14.25 15.75 7.5" />
+                      <circle cx="6.5" cy="8.5" r="2.5" />
+                      <circle cx="17.5" cy="15.5" r="2.5" />
+                    </svg>
+                  }
+                }
+              </span>
+              <span class="kpi-label">{{ kpi.label }}</span>
+            </div>
+            <p class="kpi-value">{{ kpi.value }}</p>
+            <p class="kpi-trend">
+              @if (kpi.arrow === "up") {
+                <svg
+                  class="trend-arrow"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                </svg>
+              } @else if (kpi.arrow === "down") {
+                <svg
+                  class="trend-arrow"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              }
+              <span [class]="kpi.arrowClass">
+                @if (kpi.percent !== null) {
+                  <b>{{ kpi.percent }}%</b>
+                }
+                {{ kpi.text }}
+              </span>
+            </p>
+          </article>
+        }
+      </section>
+
+      <section class="cols-2">
+        <article class="panel-card">
+          <header class="panel-head">
+            <h2 class="panel-title">Gasto por categoría</h2>
+            <p class="panel-sub">Categorías predefinidas del sistema</p>
+          </header>
+          <div class="cat-grid">
+            @for (cat of categories(); track cat.name) {
+              <div class="cat-item">
+                <div class="cat-row">
+                  <span class="cat-name">{{ cat.name }}</span>
+                  <span class="cat-amount">{{ money(cat.raw) }}</span>
+                </div>
+                <div class="bar">
+                  <span
+                    class="bar-fill"
+                    [class]="'bar-' + cat.tone"
+                    [style.width.%]="cat.percent"
+                  ></span>
+                </div>
+              </div>
+            }
+          </div>
+        </article>
+
+        <div class="right-col">
+          <article class="panel-card">
+            <header class="panel-head">
+              <h2 class="panel-title">Alertas de presupuesto</h2>
+              <p class="panel-sub">Límite mensual por categoría</p>
+            </header>
+            @if (alerts().length > 0) {
+              <div class="alert-grid">
+                @for (alert of alerts(); track alert.category) {
+                  <div class="alert-card" [class]="alert.percent >= 100 ? 'alert-red' : 'alert-amber'">
+                    <p class="alert-line">
+                      <span class="alert-dot"></span>
+                      {{ alert.category }} — <b>{{ alert.percent }}% del límite</b>
+                    </p>
+                    <p class="alert-detail">
+                      {{ money(alert.spent) }} de {{ money(alert.limit) }} presupuestados
+                    </p>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="alert-empty">
+                No hay alertas de presupuesto todavía. Registra transacciones para
+                ver tu avance por categoría.
+              </p>
+            }
+          </article>
+
+          <article class="panel-card chart-panel">
+            <header class="panel-head">
+              <h2 class="panel-title">Comparativa mensual</h2>
+              <p class="panel-sub">Ingresos vs. egresos — últimos 6 meses</p>
+            </header>
+            <div class="chart">
+              <div class="chart-plot">
+                @for (month of chart(); track month.label) {
+                  <div class="chart-group">
+                    <div class="chart-bars">
+                      <span
+                        class="chart-bar chart-income"
+                        [style.height.%]="barHeight(month.income)"
+                        title="Ingresos {{ month.label }}"
+                      ></span>
+                      <span
+                        class="chart-bar chart-expense"
+                        [style.height.%]="barHeight(month.expense)"
+                        title="Egresos {{ month.label }}"
+                      ></span>
+                    </div>
+                    <span class="chart-label">{{ month.label }}</span>
+                  </div>
+                }
+              </div>
+              <div class="chart-legend">
+                <span class="legend-item">
+                  <span class="legend-dot legend-dot-income"></span>
+                  Ingresos
+                </span>
+                <span class="legend-item">
+                  <span class="legend-dot legend-dot-expense"></span>
+                  Egresos
+                </span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel-card tx-panel">
+        <header class="panel-head">
+          <h2 class="panel-title">Registrar transacción</h2>
+          <p class="panel-sub">Sin necesidad de iniciar sesión</p>
+        </header>
+        <form class="tx-form" (ngSubmit)="submit()">
+          <div class="tx-field">
+            <span class="tx-label">Tipo</span>
+            <div class="type-toggle">
+              <button
+                type="button"
+                class="type-btn"
+                [class.type-btn-active]="tipo() === 'INCOME'"
+                (click)="setTipo('INCOME')"
+              >
+                Ingreso
+              </button>
+              <button
+                type="button"
+                class="type-btn"
+                [class.type-btn-active-danger]="tipo() === 'EXPENSE'"
+                (click)="setTipo('EXPENSE')"
+              >
+                Egreso
+              </button>
+            </div>
+          </div>
+
+          <div class="tx-field">
+            <label class="tx-label" for="tx-amount">Monto</label>
+            <div class="money-input">
+              <span class="money-prefix">Q</span>
+              <input
+                id="tx-amount"
+                class="tx-input"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="0.00"
+                [(ngModel)]="amount"
+                name="amount"
+              />
+            </div>
+          </div>
+
+          <div class="tx-field">
+            <label class="tx-label" for="tx-category">Categoría</label>
+            <div class="select-wrap">
+              <select
+                id="tx-category"
+                class="tx-select"
+                [(ngModel)]="category"
+                name="category"
+              >
+                @for (option of expenseCategories; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+              <svg
+                class="select-chevron"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="tx-field">
+            <label class="tx-label" for="tx-date">Fecha</label>
+            <input
+              id="tx-date"
+              class="tx-input"
+              type="date"
+              [(ngModel)]="date"
+              name="date"
+            />
+          </div>
+
+          <div class="tx-field tx-field-submit">
+            <button class="tx-submit" type="submit" [disabled]="submitting">
+              {{ submitting ? "Guardando…" : "Agregar" }}
+            </button>
+          </div>
+        </form>
+      </section>
+    }
+  </main>
+
+  <footer class="dash-footer">
+    DATANEX · Control de Gastos — Uso personal y familiar
+  </footer>
+</div>
