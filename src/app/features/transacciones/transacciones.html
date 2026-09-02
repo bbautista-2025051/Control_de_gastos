@@ -1,0 +1,497 @@
+<div class="tx-shell">
+  <div class="bg-light bg-light-green" aria-hidden="true"></div>
+  <div class="bg-light bg-light-purple" aria-hidden="true"></div>
+
+  <header class="tx-nav">
+    <div class="tx-nav-inner">
+      <div class="brand">
+        <img
+          src="logo-gestion.png"
+          alt="Logo de Control de Gastos"
+          class="brand-logo"
+        />
+      </div>
+
+      <nav class="nav-tabs" aria-label="Navegación principal">
+        <a class="nav-tab" routerLink="/dashboard" routerLinkActive="nav-tab-active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+        <a class="nav-tab nav-tab-active" routerLink="/transacciones" routerLinkActive="nav-tab-active">Transacciones</a>
+        <a class="nav-tab">Categorías</a>
+        <a class="nav-tab">Reportes</a>
+      </nav>
+
+      <div class="avatar-wrap">
+        <button class="avatar" type="button" (click)="toggleMenu()" title="Menú de usuario">
+          {{ initials(user()?.name) }}
+        </button>
+        @if (menuOpen()) {
+          <div class="menu-backdrop" (click)="menuOpen.set(false)"></div>
+          <div class="user-menu">
+            <button class="user-menu-item" type="button" (click)="settings()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a6.759 6.759 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              Ajustes de la cuenta
+            </button>
+            <button class="user-menu-item user-menu-item-danger" type="button" (click)="logout()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-9a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 4.5 21h9a2.25 2.25 0 0 0 2.25-2.25V15m0 0 3-3m0 0-3-3m3 3H9" />
+              </svg>
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="tx-main">
+    @if (loadError) {
+      <p class="tx-error">No se pudo cargar su información.</p>
+    } @else {
+      <section class="page-head">
+        <h1 class="page-title">Transacciones</h1>
+        <p class="page-sub">
+          Registra y consulta sus ingresos y gastos — sin necesidad de iniciar sesión
+        </p>
+      </section>
+
+      <section class="kpi-grid">
+        @for (kpi of kpis(); track kpi.label) {
+          <article class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-icon" [class]="'kpi-icon-' + kpi.tone">
+                @switch (kpi.icon) {
+                  @case ("wallet") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M21 12a2 2 0 0 0-2-2H7a2 2 0 0 1 0-4h12v4" />
+                      <path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1" />
+                      <circle cx="17" cy="15" r="1" fill="currentColor" />
+                    </svg>
+                  }
+                  @case ("trend-up") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+                    </svg>
+                  }
+                  @case ("trend-down") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M2.25 6 9 12.75l4.286-4.286a11.948 11.948 0 0 1 4.306 6.43l.776 2.898m0 0 3.182-5.511m-3.182 5.51-5.511-3.181" />
+                    </svg>
+                  }
+                  @case ("list") {
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                  }
+                }
+              </span>
+              <span class="kpi-label">{{ kpi.label }}</span>
+            </div>
+            <p class="kpi-value">{{ kpi.value }}</p>
+            <p class="kpi-trend">
+              @if (kpi.arrow === "up") {
+                <svg
+                  class="trend-arrow"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                </svg>
+              } @else if (kpi.arrow === "down") {
+                <svg
+                  class="trend-arrow"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              }
+              <span [class]="kpi.arrowClass">
+                @if (kpi.percent !== null) {
+                  <b>{{ kpi.percent }}%</b>
+                }
+                {{ kpi.text }}
+              </span>
+            </p>
+          </article>
+        }
+      </section>
+
+      <section class="tx-layout">
+        <div class="left-col">
+          <article class="panel-card">
+            <header class="panel-header">
+              <div>
+                <h2 class="panel-title">Historial de movimientos</h2>
+                <p class="panel-sub">Categorías predefinidas del sistema</p>
+              </div>
+              <div class="tabs">
+                <button
+                  type="button"
+                  class="tab"
+                  [class.tab-active]="filter() === 'ALL'"
+                  (click)="setFilter('ALL')"
+                >
+                  Todos
+                </button>
+                <button
+                  type="button"
+                  class="tab"
+                  [class.tab-active]="filter() === 'INCOME'"
+                  (click)="setFilter('INCOME')"
+                >
+                  Ingresos
+                </button>
+                <button
+                  type="button"
+                  class="tab"
+                  [class.tab-active]="filter() === 'EXPENSE'"
+                  (click)="setFilter('EXPENSE')"
+                >
+                  Gastos
+                </button>
+              </div>
+            </header>
+
+            <div class="search-wrap">
+              <svg
+                class="search-icon"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input
+                class="search-input"
+                type="text"
+                placeholder="Buscar por descripción o categoría…"
+                [(ngModel)]="search"
+                name="search"
+              />
+            </div>
+
+            @if (loading) {
+              <p class="list-empty">Cargando movimientos…</p>
+            } @else if (filteredTransactions().length === 0) {
+              <p class="list-empty">
+                No hay movimientos registrados que coincidan con su búsqueda.
+              </p>
+            } @else {
+              <ul class="tx-list">
+                @for (item of filteredTransactions(); track item.id) {
+                  <li class="tx-item">
+                    <div class="tx-left">
+                      <span
+                        class="tx-ic"
+                        [class]="item.type === 'INCOME' ? 'badge-income' : 'badge-expense'"
+                      >
+                        @switch (categoryIcon(item.category)) {
+                          @case ("wallet") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M21 12a2 2 0 0 0-2-2H7a2 2 0 0 1 0-4h12v4" />
+                              <path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1" />
+                              <circle cx="17" cy="15" r="1" fill="currentColor" />
+                            </svg>
+                          }
+                          @case ("cart") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <circle cx="8" cy="21" r="1" />
+                              <circle cx="19" cy="21" r="1" />
+                              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                            </svg>
+                          }
+                          @case ("bulb") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M9 18h6" />
+                              <path d="M10 22h4" />
+                              <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
+                            </svg>
+                          }
+                          @case ("bus") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M8 6v6" />
+                              <path d="M15 6v6" />
+                              <path d="M2 12h19.6" />
+                              <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" />
+                              <circle cx="7" cy="18" r="2" />
+                              <path d="M9 18h5" />
+                              <circle cx="16" cy="18" r="2" />
+                            </svg>
+                          }
+                          @case ("health") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                              <path d="M12 22v-4" />
+                            </svg>
+                          }
+                          @case ("home") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M3 10.5 12 3l9 7.5" />
+                              <path d="M5 9.5V21h14V9.5" />
+                              <path d="M9 21v-6h6v6" />
+                            </svg>
+                          }
+                          @case ("book") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                            </svg>
+                          }
+                          @case ("gamepad") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M6 11h4" />
+                              <path d="M8 9v4" />
+                              <path d="M15 12h.01" />
+                              <path d="M18 10h.01" />
+                              <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5Z" />
+                            </svg>
+                          }
+                          @case ("shirt") {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z" />
+                            </svg>
+                          }
+                          @default {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                              <path d="M3.3 7 12 12l8.7-5" />
+                              <path d="M12 22V12" />
+                            </svg>
+                          }
+                        }
+                      </span>
+                      <div class="tx-meta">
+                        <p class="tx-name">{{ item.description }}</p>
+                        <p class="tx-cat">{{ item.category }}</p>
+                      </div>
+                    </div>
+                    <div class="tx-right">
+                      <p class="tx-date">{{ formatDate(item.date) }}</p>
+                      <p
+                        class="tx-amt"
+                        [class]="item.type === 'INCOME' ? 'amt-pos' : 'amt-neg'"
+                      >
+                        {{ item.type === "INCOME" ? "+" : "−" }} {{ money(item.amount) }}
+                      </p>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </article>
+        </div>
+
+        <div class="right-col">
+          <article class="panel-card">
+            <header class="panel-head">
+              <h2 class="panel-title">Registrar transacción</h2>
+              <p class="panel-sub">Sin necesidad de iniciar sesión</p>
+            </header>
+            <form class="tx-form" (ngSubmit)="submit()">
+              <div class="toggle">
+                <button
+                  type="button"
+                  class="toggle-btn"
+                  [class.toggle-on]="tipo() === 'INCOME'"
+                  (click)="setTipo('INCOME')"
+                >
+                  <svg class="toggle-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 7h10v10" />
+                    <path d="M7 17 17 7" />
+                  </svg>
+                  Ingreso
+                </button>
+                <button
+                  type="button"
+                  class="toggle-btn"
+                  [class.toggle-egreso]="tipo() === 'EXPENSE'"
+                  (click)="setTipo('EXPENSE')"
+                >
+                  <svg class="toggle-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 17h10V7" />
+                    <path d="M17 17 7 7" />
+                  </svg>
+                  Egreso
+                </button>
+              </div>
+
+              <div class="tx-field">
+                <label class="tx-label" for="tx-amount">Monto</label>
+                <div class="money-input">
+                  <span class="money-prefix">Q</span>
+                  <input
+                    id="tx-amount"
+                    class="tx-input money-input-field"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    placeholder="0.00"
+                    [(ngModel)]="amount"
+                    name="amount"
+                  />
+                </div>
+              </div>
+
+              <div class="tx-field">
+                <label class="tx-label" for="tx-category">Categoría</label>
+                <div class="select-wrap">
+                  <select
+                    id="tx-category"
+                    class="tx-select"
+                    [(ngModel)]="category"
+                    name="category"
+                  >
+                    @for (option of expenseCategories; track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                  <svg
+                    class="select-chevron"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="tx-field">
+                <label class="tx-label" for="tx-description">Descripción</label>
+                <input
+                  id="tx-description"
+                  class="tx-input"
+                  type="text"
+                  placeholder="Ej: Supermercado La Torre"
+                  [(ngModel)]="description"
+                  name="description"
+                />
+              </div>
+
+              <div class="tx-field">
+                <label class="tx-label" for="tx-date">Fecha</label>
+                <input
+                  id="tx-date"
+                  class="tx-input"
+                  type="date"
+                  [(ngModel)]="date"
+                  name="date"
+                />
+              </div>
+
+              <div class="tx-field tx-field-submit">
+                <button class="tx-submit" type="submit" [disabled]="submitting">
+                  {{ submitting ? "Guardando…" : "Agregar transacción" }}
+                </button>
+              </div>
+            </form>
+
+            <div class="cat-summary">
+              @for (cat of categories(); track cat.name) {
+                <div class="cat-row">
+                  <span class="cat-l">
+                    <span class="cat-dot" [class]="'dot-' + cat.tone"></span>
+                    {{ cat.name }}
+                  </span>
+                  <span class="cat-v">{{ money(cat.raw) }}</span>
+                </div>
+              }
+            </div>
+          </article>
+        </div>
+      </section>
+    }
+  </main>
+
+  <footer class="tx-footer">
+    DATANEX · Control de Gastos — Uso personal y familiar
+  </footer>
+</div>
